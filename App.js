@@ -3,16 +3,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
-import { Text, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { InMemoryCache } from '@apollo/client/core';
 import { persistCache } from 'apollo3-cache-persist';
 import { ApolloClient, ApolloProvider } from '@apollo/client';
 import apolloClientOptions from './apollo';
+import { ThemeProvider } from 'styled-components';
+import styles from './styles';
+import NavController from './components/NavController';
+import { AuthProvider } from './AuthContext';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
   const [client, setClient] = useState(null);
+
   const preLoad = async () => {
     try {
       await Font.loadAsync({
@@ -34,16 +38,20 @@ export default function App() {
       console.log(e);
     }
   };
+
   useEffect(() => {
     preLoad();
   }, []);
+
   return isReady && client ? (
     <ApolloProvider client={client}>
-      <View>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
+      <ThemeProvider theme={styles}>
+        <AuthProvider>
+          <NavController />
+        </AuthProvider>
+      </ThemeProvider>
     </ApolloProvider>
   ) : (
-    <AppLoading />
+    <AppLoading autoHideSplash={true} />
   );
 }
